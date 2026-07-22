@@ -68,8 +68,8 @@
     },
     {
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={ \"ok\": true, \"message\": $json.message }",
+        "respondWith": "text",
+        "responseBody": "={{ $json.message }}",
         "options": {}
       },
       "id": "be7b462c-9d11-4b49-bfb8-c683e5ce0c1f",
