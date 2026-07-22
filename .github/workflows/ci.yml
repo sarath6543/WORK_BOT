@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
@@ -59,6 +60,7 @@ jobs:
 
       - name: Notify n8n
         if: always() && env.N8N_WEBHOOK_URL != ''
+        continue-on-error: true
         shell: bash
         env:
           JOB_STATUS: ${{ job.status }}
@@ -70,7 +72,7 @@ jobs:
           RUN_ID: ${{ github.run_id }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
-          curl -sS -X POST "$N8N_WEBHOOK_URL" \
+          curl -sS --max-time 20 --retry 2 -X POST "$N8N_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d "{
               \"repository\": \"$REPOSITORY\",
@@ -82,9 +84,3 @@ jobs:
               \"event\": \"$EVENT_NAME\",
               \"run_url\": \"https://github.com/$REPOSITORY/actions/runs/$RUN_ID\"
             }"
-on:
-  workflow_dispatch:
-  pull_request:
-  push:
-    branches:
-      - main
