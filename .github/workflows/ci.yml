@@ -82,3 +82,9 @@ jobs:
               \"event\": \"$EVENT_NAME\",
               \"run_url\": \"https://github.com/$REPOSITORY/actions/runs/$RUN_ID\"
             }"
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
