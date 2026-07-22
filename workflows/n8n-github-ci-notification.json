@@ -38,7 +38,7 @@
             {
               "id": "status",
               "name": "status",
-              "value": "={{ $json.body.status }}",
+              "value": "={{ String($json.body.status || '').trim().toLowerCase() }}",
               "type": "string"
             },
             {
@@ -50,19 +50,19 @@
             {
               "id": "message",
               "name": "message",
-              "value": "=GitHub Actions {{ $json.body.status }} for {{ $json.body.repository }} on {{ $json.body.branch }}: {{ $json.body.run_url }}",
+              "value": "=GitHub Actions {{ String($json.body.status || '').trim().toLowerCase() }} for {{ $json.body.repository }} on {{ $json.body.branch }}: {{ $json.body.run_url }}",
               "type": "string"
             },
             {
               "id": "status_type",
               "name": "status_type",
-              "value": "={{ ['success', 'succeeded', 'passed'].includes(String($json.body.status || '').toLowerCase()) ? 'SUCCESS' : 'FAILED' }}",
+              "value": "={{ ['success', 'succeeded', 'passed'].includes(String($json.body.status || '').trim().toLowerCase()) ? 'SUCCESS' : 'FAILED' }}",
               "type": "string"
             },
             {
               "id": "email_subject",
               "name": "email_subject",
-              "value": "={{ ['success', 'succeeded', 'passed'].includes(String($json.body.status || '').toLowerCase()) ? '[CI SUCCESS] ' + $json.body.repository + ' - ' + $json.body.branch : '[CI FAILED] ' + $json.body.repository + ' - ' + $json.body.branch }}",
+              "value": "={{ ['success', 'succeeded', 'passed'].includes(String($json.body.status || '').trim().toLowerCase()) ? '[CI SUCCESS] ' + $json.body.repository + ' - ' + $json.body.branch : '[CI FAILED] ' + $json.body.repository + ' - ' + $json.body.branch }}",
               "type": "string"
             },
             {
@@ -110,7 +110,7 @@
     {
       "parameters": {
         "respondWith": "text",
-        "responseBody": "={{ $json.message }}",
+        "responseBody": "={{ $json.email_subject + '\\n' + $json.message }}",
         "options": {}
       },
       "id": "be7b462c-9d11-4b49-bfb8-c683e5ce0c1f",
