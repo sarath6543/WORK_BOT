@@ -31,7 +31,8 @@ for ($i = 0; $i -lt 30; $i++) {
             exit 0
         }
     }
-}
+#     //updates
+# }
 
 Write-Output "Tunnel started, but no URL was found yet. Check $logPath."
 exit 1
