@@ -124,6 +124,15 @@ The server saves a markdown file in `change-requests/`. Then ask Codex:
 Read the latest change request in change-requests and implement it. Run checks, commit, and push.
 ```
 
+## How Codex Handles a Change Request
+
+1. A developer sends a change request to `POST http://127.0.0.1:8787/change-request`.
+2. The local server saves the request as a markdown file in `change-requests/`.
+3. Codex reads the latest change request file and updates the requested files.
+4. Codex runs available checks, commits the change, and pushes to GitHub.
+5. GitHub Actions runs CI and calls n8n.
+6. n8n sends the final success or failure email notification.
+
 ## Example Codex Prompt
 
 ```text
