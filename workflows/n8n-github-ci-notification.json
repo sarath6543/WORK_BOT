@@ -1,0 +1,119 @@
+{
+  "name": "GitHub CI Notification Starter",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "github-ci",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8b528f90-a8d6-47d8-b017-cf1225452c5b",
+      "name": "GitHub Actions Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "github-ci"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "repository",
+              "name": "repository",
+              "value": "={{ $json.body.repository }}",
+              "type": "string"
+            },
+            {
+              "id": "branch",
+              "name": "branch",
+              "value": "={{ $json.body.branch }}",
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "name": "status",
+              "value": "={{ $json.body.status }}",
+              "type": "string"
+            },
+            {
+              "id": "run_url",
+              "name": "run_url",
+              "value": "={{ $json.body.run_url }}",
+              "type": "string"
+            },
+            {
+              "id": "message",
+              "name": "message",
+              "value": "=GitHub Actions {{ $json.body.status }} for {{ $json.body.repository }} on {{ $json.body.branch }}: {{ $json.body.run_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d4329262-1ef4-4d62-b93c-4de4ce2c0554",
+      "name": "Prepare Notification",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"ok\": true, \"message\": $json.message }",
+        "options": {}
+      },
+      "id": "be7b462c-9d11-4b49-bfb8-c683e5ce0c1f",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        520,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "GitHub Actions Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Notification": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "starter",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}
+

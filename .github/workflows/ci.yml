@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test-security:
+    runs-on: ubuntu-latest
+    env:
+      N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect Node project
+        id: node_project
+        shell: bash
+        run: |
+          if [ -f package.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node
+        if: steps.node_project.outputs.exists == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.node_project.outputs.exists == 'true'
+        run: npm ci
+
+      - name: Lint
+        if: steps.node_project.outputs.exists == 'true'
+        run: npm run lint --if-present
+
+      - name: Test
+        if: steps.node_project.outputs.exists == 'true'
+        run: npm test --if-present
+
+      - name: Build
+        if: steps.node_project.outputs.exists == 'true'
+        run: npm run build --if-present
+
+      - name: Security audit
+        if: steps.node_project.outputs.exists == 'true'
+        run: npm audit --audit-level=high
+
+      - name: No project detected
+        if: steps.node_project.outputs.exists != 'true'
+        run: echo "No package.json found. Add project-specific CI steps when the app is created."
+
+      - name: Notify n8n
+        if: always() && env.N8N_WEBHOOK_URL != ''
+        shell: bash
+        env:
+          JOB_STATUS: ${{ job.status }}
+          REPOSITORY: ${{ github.repository }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          ACTOR: ${{ github.actor }}
+          WORKFLOW: ${{ github.workflow }}
+          RUN_ID: ${{ github.run_id }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          curl -sS -X POST "$N8N_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"repository\": \"$REPOSITORY\",
+              \"branch\": \"$REF_NAME\",
+              \"commit\": \"$SHA\",
+              \"actor\": \"$ACTOR\",
+              \"status\": \"$JOB_STATUS\",
+              \"workflow\": \"$WORKFLOW\",
+              \"event\": \"$EVENT_NAME\",
+              \"run_url\": \"https://github.com/$REPOSITORY/actions/runs/$RUN_ID\"
+            }"
