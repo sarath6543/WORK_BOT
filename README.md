@@ -35,6 +35,22 @@ N8N_WEBHOOK_URL=https://your-n8n-domain/webhook/github-ci
 
 7. Push code or open a pull request. GitHub Actions will run and notify n8n.
 
+## Local n8n Tunnel
+
+GitHub Actions cannot call `localhost` on your computer. If n8n is running only on this machine, start a temporary public tunnel:
+
+```powershell
+.\scripts\start-n8n-tunnel.ps1
+```
+
+The script prints a value like:
+
+```text
+GitHub secret N8N_WEBHOOK_URL value: https://example.loca.lt/webhook/github-ci
+```
+
+Add that value to GitHub as the `N8N_WEBHOOK_URL` repository secret. Keep the tunnel running while GitHub Actions needs to notify local n8n.
+
 ## Example Codex Prompt
 
 ```text
@@ -50,4 +66,3 @@ Done when:
 - Tests/build pass where available.
 - Summarize changed files and verification.
 ```
-
