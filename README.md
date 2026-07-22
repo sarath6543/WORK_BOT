@@ -79,6 +79,51 @@ GitHub secret N8N_WEBHOOK_URL value: https://example.loca.lt/webhook/github-ci
 
 Add that value to GitHub as the `N8N_WEBHOOK_URL` repository secret. Keep the tunnel running while GitHub Actions needs to notify local n8n.
 
+## Local Change Request Intake
+
+If mail intake is not working, use the local change request endpoint:
+
+```powershell
+node .\scripts\change-request-server.js
+```
+
+Then send this from Postman:
+
+```text
+POST http://127.0.0.1:8787/change-request
+Content-Type: application/json
+```
+
+Example body:
+
+```json
+{
+  "title": "Update README workflow summary",
+  "requester": "Sarath",
+  "priority": "High",
+  "description": "Add a short section explaining how a developer submits a change request and how Codex handles it.",
+  "requirements": [
+    "Document the local POST endpoint",
+    "Explain that Codex reads the latest change request file",
+    "Keep the language simple"
+  ],
+  "acceptance_criteria": [
+    "README contains the new section",
+    "GitHub Actions succeeds",
+    "n8n sends the final email notification"
+  ],
+  "files": [
+    "README.md"
+  ]
+}
+```
+
+The server saves a markdown file in `change-requests/`. Then ask Codex:
+
+```text
+Read the latest change request in change-requests and implement it. Run checks, commit, and push.
+```
+
 ## Example Codex Prompt
 
 ```text

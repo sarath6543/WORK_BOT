@@ -1,2 +1,4 @@
 localtunnel.log
+change-requests/*.md
+!change-requests/README.md
 
