@@ -43,6 +43,13 @@ The n8n workflow includes a **Send Email Notification** node addressed to:
 sarathkumar654@gmail.com
 ```
 
+Email subjects are status-specific:
+
+```text
+[CI SUCCESS] repository - branch
+[CI FAILED] repository - branch
+```
+
 To actually send mail, open the node in n8n and create/select SMTP credentials. For Gmail, use Gmail SMTP with an app password or configure a Gmail/OAuth credential according to your n8n setup.
 
 For the Outlook SMTP account, create an n8n **SMTP** credential with:

@@ -52,6 +52,24 @@
               "name": "message",
               "value": "=GitHub Actions {{ $json.body.status }} for {{ $json.body.repository }} on {{ $json.body.branch }}: {{ $json.body.run_url }}",
               "type": "string"
+            },
+            {
+              "id": "status_type",
+              "name": "status_type",
+              "value": "={{ $json.body.status === 'success' ? 'SUCCESS' : 'FAILED' }}",
+              "type": "string"
+            },
+            {
+              "id": "email_subject",
+              "name": "email_subject",
+              "value": "={{ $json.body.status === 'success' ? '[CI SUCCESS] ' + $json.body.repository + ' - ' + $json.body.branch : '[CI FAILED] ' + $json.body.repository + ' - ' + $json.body.branch }}",
+              "type": "string"
+            },
+            {
+              "id": "email_body",
+              "name": "email_body",
+              "value": "=Status: {{ $json.body.status }}\nRepository: {{ $json.body.repository }}\nBranch: {{ $json.body.branch }}\nCommit: {{ $json.body.commit }}\nActor: {{ $json.body.actor }}\nWorkflow: {{ $json.body.workflow }}\nEvent: {{ $json.body.event }}\nRun URL: {{ $json.body.run_url }}",
+              "type": "string"
             }
           ]
         },
@@ -72,9 +90,9 @@
         "operation": "send",
         "fromEmail": "beopredict@beo.in",
         "toEmail": "sarathkumar654@gmail.com",
-        "subject": "=GitHub Actions {{ $json.status }} - {{ $json.repository }}",
+        "subject": "={{ $json.email_subject }}",
         "emailFormat": "text",
-        "text": "={{ $json.message }}",
+        "text": "={{ $json.email_body }}",
         "options": {
           "appendAttribution": false
         }
