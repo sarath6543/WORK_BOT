@@ -56,13 +56,13 @@
             {
               "id": "status_type",
               "name": "status_type",
-              "value": "={{ $json.body.status === 'success' ? 'SUCCESS' : 'FAILED' }}",
+              "value": "={{ ['success', 'succeeded', 'passed'].includes(String($json.body.status || '').toLowerCase()) ? 'SUCCESS' : 'FAILED' }}",
               "type": "string"
             },
             {
               "id": "email_subject",
               "name": "email_subject",
-              "value": "={{ $json.body.status === 'success' ? '[CI SUCCESS] ' + $json.body.repository + ' - ' + $json.body.branch : '[CI FAILED] ' + $json.body.repository + ' - ' + $json.body.branch }}",
+              "value": "={{ ['success', 'succeeded', 'passed'].includes(String($json.body.status || '').toLowerCase()) ? '[CI SUCCESS] ' + $json.body.repository + ' - ' + $json.body.branch : '[CI FAILED] ' + $json.body.repository + ' - ' + $json.body.branch }}",
               "type": "string"
             },
             {
