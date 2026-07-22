@@ -68,6 +68,29 @@
     },
     {
       "parameters": {
+        "resource": "email",
+        "operation": "send",
+        "fromEmail": "beopredict@beo.in",
+        "toEmail": "sarathkumar654@gmail.com",
+        "subject": "=GitHub Actions {{ $json.status }} - {{ $json.repository }}",
+        "emailFormat": "text",
+        "text": "={{ $json.message }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "8c030ef7-83c7-4d44-8d4b-f31cbbf5c2a9",
+      "name": "Send Email Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        520,
+        -160
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
         "respondWith": "text",
         "responseBody": "={{ $json.message }}",
         "options": {}
@@ -98,6 +121,11 @@
     "Prepare Notification": {
       "main": [
         [
+          {
+            "node": "Send Email Notification",
+            "type": "main",
+            "index": 0
+          },
           {
             "node": "Respond OK",
             "type": "main",

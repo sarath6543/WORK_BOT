@@ -35,6 +35,27 @@ N8N_WEBHOOK_URL=https://your-n8n-domain/webhook/github-ci
 
 7. Push code or open a pull request. GitHub Actions will run and notify n8n.
 
+## Email Notification
+
+The n8n workflow includes a **Send Email Notification** node addressed to:
+
+```text
+sarathkumar654@gmail.com
+```
+
+To actually send mail, open the node in n8n and create/select SMTP credentials. For Gmail, use Gmail SMTP with an app password or configure a Gmail/OAuth credential according to your n8n setup.
+
+For the Outlook SMTP account, create an n8n **SMTP** credential with:
+
+```text
+Host: smtp-mail.outlook.com
+Port: 587
+User: beopredict@beo.in
+Security: STARTTLS / TLS
+```
+
+Enter the SMTP password only inside n8n credentials. Do not commit it to Git.
+
 ## Local n8n Tunnel
 
 GitHub Actions cannot call `localhost` on your computer. If n8n is running only on this machine, start a temporary public tunnel:
