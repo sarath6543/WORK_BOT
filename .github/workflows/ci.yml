@@ -15,8 +15,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Detect Node project
-        id: node_project
+      - name: Detect root Node project
+        id: root_node_project
         shell: bash
         run: |
           if [ -f package.json ]; then
@@ -25,35 +25,69 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Detect document collection form project
+        id: document_form_project
+        shell: bash
+        run: |
+          if [ -f document-collection-form/package.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Setup Node
-        if: steps.node_project.outputs.exists == 'true'
+        if: steps.root_node_project.outputs.exists == 'true' || steps.document_form_project.outputs.exists == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      - name: Install dependencies
-        if: steps.node_project.outputs.exists == 'true'
+      - name: Install root dependencies
+        if: steps.root_node_project.outputs.exists == 'true'
         run: npm ci
 
-      - name: Lint
-        if: steps.node_project.outputs.exists == 'true'
+      - name: Lint root project
+        if: steps.root_node_project.outputs.exists == 'true'
         run: npm run lint --if-present
 
-      - name: Test
-        if: steps.node_project.outputs.exists == 'true'
+      - name: Test root project
+        if: steps.root_node_project.outputs.exists == 'true'
         run: npm test --if-present
 
-      - name: Build
-        if: steps.node_project.outputs.exists == 'true'
+      - name: Build root project
+        if: steps.root_node_project.outputs.exists == 'true'
         run: npm run build --if-present
 
-      - name: Security audit
-        if: steps.node_project.outputs.exists == 'true'
+      - name: Security audit root project
+        if: steps.root_node_project.outputs.exists == 'true'
+        run: npm audit --audit-level=high
+
+      - name: Install document collection form dependencies
+        if: steps.document_form_project.outputs.exists == 'true'
+        working-directory: document-collection-form
+        run: npm ci
+
+      - name: Lint document collection form
+        if: steps.document_form_project.outputs.exists == 'true'
+        working-directory: document-collection-form
+        run: npm run lint
+
+      - name: Test document collection form
+        if: steps.document_form_project.outputs.exists == 'true'
+        working-directory: document-collection-form
+        run: npm test
+
+      - name: Build document collection form
+        if: steps.document_form_project.outputs.exists == 'true'
+        working-directory: document-collection-form
+        run: npm run build
+
+      - name: Security audit document collection form
+        if: steps.document_form_project.outputs.exists == 'true'
+        working-directory: document-collection-form
         run: npm audit --audit-level=high
 
       - name: No project detected
-        if: steps.node_project.outputs.exists != 'true'
+        if: steps.root_node_project.outputs.exists != 'true' && steps.document_form_project.outputs.exists != 'true'
         run: echo "No package.json found. Add project-specific CI steps when the app is created."
 
   notify-n8n:

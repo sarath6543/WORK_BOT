@@ -1,4 +1,7 @@
 localtunnel.log
 change-requests/*.md
 !change-requests/README.md
-
+node_modules/
+dist/
+document-collection-form/node_modules/
+document-collection-form/dist/

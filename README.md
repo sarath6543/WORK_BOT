@@ -19,6 +19,7 @@ Developer
 - `AGENTS.md`: durable instructions for Codex in this repository.
 - `.github/workflows/ci.yml`: GitHub Actions workflow for build, test, security audit, and n8n notification.
 - `workflows/n8n-github-ci-notification.json`: starter n8n workflow import file.
+- `document-collection-form/`: standalone static document collection form project.
 
 ## First Setup
 
@@ -132,6 +133,21 @@ Read the latest change request in change-requests and implement it. Run checks, 
 4. Codex runs available checks, commits the change, and pushes to GitHub.
 5. GitHub Actions runs CI and calls n8n.
 6. n8n sends the final success or failure email notification.
+
+## Document Collection Form Project
+
+The `document-collection-form/` folder contains a standalone browser form for document request intake. It validates requester and client details, requires at least one requested document, saves drafts in browser local storage, and generates a JSON payload.
+
+Run project checks from the subfolder:
+
+```powershell
+cd document-collection-form
+npm test
+npm run lint
+npm run build
+```
+
+GitHub Actions detects this subproject and runs the same checks on push or pull request. For future updates, create a change request that lists files under `document-collection-form/`, then ask Codex to implement the change, run checks, commit, and push.
 
 ## Example Codex Prompt
 
