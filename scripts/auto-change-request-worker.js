@@ -37,6 +37,28 @@ function listRequests() {
     .map((file) => path.join(requestDir, file));
 }
 
+function suggestedFilesFor(requestFile) {
+  const content = fs.readFileSync(requestFile, 'utf8');
+  const match = content.match(/## Suggested Files\s+([\s\S]*?)(?:\n## |\s*$)/);
+  if (!match) {
+    return [];
+  }
+
+  return match[1]
+    .split(/\r?\n/)
+    .map((line) => line.trim().replace(/^- /, '').trim())
+    .filter((line) => line && line !== 'Not specified');
+}
+
+function hasOverlap(left, right) {
+  if (left.length === 0 || right.length === 0) {
+    return false;
+  }
+
+  const rightSet = new Set(right.map((item) => item.toLowerCase()));
+  return left.some((item) => rightSet.has(item.toLowerCase()));
+}
+
 function run(command, args, options = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
@@ -102,10 +124,32 @@ async function tick() {
   running = true;
   const state = loadState();
   const processed = new Set(state.processed || []);
+  const skipped = new Set(state.skipped || []);
 
   try {
-    const next = listRequests().find((file) => !processed.has(path.basename(file)));
+    const requests = listRequests();
+    const pending = requests.filter((file) => !processed.has(path.basename(file)) && !skipped.has(path.basename(file)));
+    const superseded = new Set();
+
+    pending.forEach((request, index) => {
+      const files = suggestedFilesFor(request);
+      const newerOverlappingRequest = pending.slice(index + 1).find((candidate) => hasOverlap(files, suggestedFilesFor(candidate)));
+      if (newerOverlappingRequest) {
+        superseded.add(path.basename(request));
+        console.log(`Skipping ${quoteForPrompt(request)} because a newer request targets the same file.`);
+      }
+    });
+
+    superseded.forEach((file) => skipped.add(file));
+
+    const next = pending.find((file) => !superseded.has(path.basename(file)));
     if (!next) {
+      saveState({
+        processed: Array.from(processed).sort(),
+        skipped: Array.from(skipped).sort(),
+        lastCheckedAt: new Date().toISOString(),
+      });
+
       if (runOnce) {
         console.log('No unprocessed change requests found.');
       }
@@ -116,6 +160,7 @@ async function tick() {
     processed.add(path.basename(next));
     saveState({
       processed: Array.from(processed).sort(),
+      skipped: Array.from(skipped).sort(),
       lastProcessedAt: new Date().toISOString(),
     });
     console.log(`Completed ${quoteForPrompt(next)}`);

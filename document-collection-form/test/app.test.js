@@ -19,13 +19,14 @@ test('form includes required intake fields', () => {
   [
     'requesterName',
     'requesterEmail',
-    'requesterPhone',
     'clientName',
     'dueDate',
     'documents',
   ].forEach((fieldName) => {
     assert.match(app, new RegExp(`name="${fieldName}"`));
   });
+
+  assert.doesNotMatch(app, /name="requesterPhone"/);
 });
 
 test('application validates required document selection', () => {
@@ -35,10 +36,10 @@ test('application validates required document selection', () => {
   assert.match(app, /Select at least one document\./);
 });
 
-test('application validates required requester phone and includes it in payload', () => {
+test('application does not validate or include requester phone', () => {
   const app = fs.readFileSync(path.join(root, 'src', 'App.tsx'), 'utf8');
 
-  assert.match(app, /form\.requesterPhone\.trim\(\)/);
-  assert.match(app, /Requester phone is required\./);
-  assert.match(app, /requesterPhone: form\.requesterPhone\.trim\(\)/);
+  assert.doesNotMatch(app, /form\.requesterPhone/);
+  assert.doesNotMatch(app, /Requester phone is required\./);
+  assert.doesNotMatch(app, /requesterPhone:/);
 });
