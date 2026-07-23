@@ -5,3 +5,5 @@ node_modules/
 dist/
 document-collection-form/node_modules/
 document-collection-form/dist/
+change-requests/.auto-worker-state.json
+logs/

@@ -123,7 +123,7 @@ const server = http.createServer(async (req, res) => {
     send(res, 201, {
       ok: true,
       file: path.relative(root, filePath).replace(/\\/g, '/'),
-      next: 'Ask Codex: read the latest change request and implement it.',
+      next: 'If the automatic worker is running, Codex will process this request. Otherwise ask Codex to read the latest change request and implement it.',
     });
   } catch (error) {
     send(res, 400, {
@@ -137,4 +137,3 @@ server.listen(port, '127.0.0.1', () => {
   console.log(`Change request intake listening on http://127.0.0.1:${port}`);
   console.log(`POST JSON to http://127.0.0.1:${port}/change-request`);
 });
-

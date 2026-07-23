@@ -3,6 +3,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 type CollectionForm = {
   requesterName: string;
   requesterEmail: string;
+  requesterPhone: string;
   clientName: string;
   dueDate: string;
   priority: 'Normal' | 'High' | 'Urgent';
@@ -31,6 +32,7 @@ const documentOptions = [
 const initialForm: CollectionForm = {
   requesterName: '',
   requesterEmail: '',
+  requesterPhone: '',
   clientName: '',
   dueDate: '',
   priority: 'Normal',
@@ -50,6 +52,10 @@ function validate(form: CollectionForm): FormErrors {
     errors.requesterEmail = 'Requester email is required.';
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.requesterEmail)) {
     errors.requesterEmail = 'Enter a valid email address.';
+  }
+
+  if (!form.requesterPhone.trim()) {
+    errors.requesterPhone = 'Requester phone is required.';
   }
 
   if (!form.clientName.trim()) {
@@ -72,6 +78,7 @@ function buildPayload(form: CollectionForm): CollectionPayload {
     ...form,
     requesterName: form.requesterName.trim(),
     requesterEmail: form.requesterEmail.trim(),
+    requesterPhone: form.requesterPhone.trim(),
     clientName: form.clientName.trim(),
     instructions: form.instructions.trim(),
     createdAt: new Date().toISOString(),
@@ -185,6 +192,18 @@ export default function App() {
                 autoComplete="email"
                 value={form.requesterEmail}
                 onChange={(event) => updateField('requesterEmail', event.target.value)}
+                required
+              />
+            </Field>
+
+            <Field label="Requester phone" error={errors.requesterPhone}>
+              <input
+                className="form-input"
+                name="requesterPhone"
+                type="tel"
+                autoComplete="tel"
+                value={form.requesterPhone}
+                onChange={(event) => updateField('requesterPhone', event.target.value)}
                 required
               />
             </Field>

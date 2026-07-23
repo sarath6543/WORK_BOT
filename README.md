@@ -134,6 +134,30 @@ Read the latest change request in change-requests and implement it. Run checks, 
 5. GitHub Actions runs CI and calls n8n.
 6. n8n sends the final success or failure email notification.
 
+## Automatic Change Request Execution
+
+To run intake and automatic processing together:
+
+```powershell
+.\scripts\start-automatic-change-flow.ps1
+```
+
+With this running, every new markdown request in `change-requests/` is picked up by `scripts/auto-change-request-worker.js`, which calls:
+
+```text
+codex exec
+```
+
+The default mode implements the request and runs checks, but does not commit or push.
+
+To also commit and push after Codex finishes:
+
+```powershell
+.\scripts\start-automatic-change-flow.ps1 -AutoPush
+```
+
+Use auto-push only when you are comfortable with each accepted request being implemented and pushed to the configured GitHub remote.
+
 ## Document Collection Form Project
 
 The `document-collection-form/` folder contains a standalone browser form for document request intake. It validates requester and client details, requires at least one requested document, saves drafts in browser local storage, and generates a JSON payload.
